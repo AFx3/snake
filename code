@@ -1,0 +1,179 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+#include <conio.h>
+#include <stdlib.h>
+int larghezza = 20, altezza = 20; //variabili campo da gioco
+int x, y, fruttoX, fruttoY,punteggio, gameover,casistica; //variabili per il setup del gioco
+int contaCoda=0;
+int codaX[100];
+int codaY[100];
+void impostazioni() //funzione per il setup del gioco
+{
+	x = larghezza / 2;
+	y = altezza / 2;
+	gameover = 0;
+
+	do {
+		fruttoX = rand() % 20;//dentro il campo da gioco
+	} while (fruttoX == 0);
+	
+
+	do { 
+		fruttoY = rand() % 20;
+	} while (fruttoY == 0);
+		
+}	
+void campo()  //definisco funzione per il gioco
+{
+	int i, j,k;
+	system("cls");
+	for (i = 0; i < larghezza; i++)
+	{
+		for (j = 0; j < altezza; j++) 
+		{
+			if (i==0 || i==altezza-1 ||j==0 || j==larghezza-1)
+			{
+				printf("*");
+			}
+			else
+			{
+				if (i == x && j == y) //testa del serpente
+					printf("O");
+				else if (i == fruttoX && j == fruttoY)
+					printf("@");
+				else 
+				{
+					int ch = 0;
+					for (k = 0; k < contaCoda; k++) //i,j
+					{
+						if (i == codaX[k] && j == codaY[k]) 
+						{
+							printf("o"); //codina del serpente
+							ch = 1;
+						}
+					}
+					if (ch == 0)
+						printf(" ");
+				}
+			}
+		}
+		printf("\n");
+	}
+	printf("--------------------\n");
+	printf("\nPUNTEGGIO=%d", punteggio);
+}
+
+void input() // movimento
+{
+	if (_kbhit())
+	{
+		switch (getch())
+		{
+		case 'a': //aswd
+			casistica = 1;
+			break;
+		case 's':
+			casistica = 2;
+			break;
+		case 'w':
+			casistica = 3;
+			break;
+		case 'd':
+			casistica = 4;
+			break;
+		case 'x':
+			gameover = 1;
+			break;
+		}
+	}
+}
+void logicaArray()
+{
+	int i;
+	int prevX = codaX[0];
+	int prevY = codaY[0];
+	int prev2X, prev2Y;
+	codaX[0] = x;
+	codaY[0] = y;
+
+	for (i = 1; i < contaCoda; i++)
+	{
+		prev2X = codaX[i];
+		prev2Y = codaY[i];
+		codaX[i] = prevX;
+		codaY[i] = prevY;
+		prevX = prev2X;
+		prevY = prev2Y;  //okk
+	}
+
+	switch (casistica)
+	{
+	case 1:
+		y--;
+		break;
+	case 2:
+		x++;
+		break;
+	case 3:
+		x--;
+		break;
+	case 4:
+		y++;
+		break;
+	default:
+		break;
+	}
+	if (x<0 || x>larghezza || y<0 || y>altezza)
+		gameover = 1;
+	for (i = 0; i < contaCoda; i++)
+	{
+		if (x == codaX[i] && y == codaY[i])
+			gameover = 1;
+	}
+	if (x == fruttoX && y == fruttoY)
+	{
+		do {
+			fruttoX = rand() % 20;
+		} while (fruttoX == 0);
+		do {
+			fruttoY = rand() % 20;
+		} while (fruttoY == 0);
+		punteggio =punteggio + 10;
+		contaCoda++;
+	}
+	
+}
+int main() 
+{
+	int m, n;
+	char rigioca;
+	
+		do {
+			impostazioni();
+			while (!gameover)
+			{
+				campo();
+				input();
+				logicaArray();
+				for (m = 0; m < 1000; m++)
+				{
+					for (n = 0; n < 10000; n++)
+					{
+					}
+				}
+				for (m = 0; m < 1000; m++)
+				{
+					for (n = 0; n < 10000; n++)
+					{
+					}
+				}
+
+			}
+			printf("\nPremi la spacebar se vuoi giocare ancora :)");
+			scanf("%c", &rigioca);
+			punteggio = 0;
+			contaCoda = 0;
+
+		} while (rigioca == ' ');
+		return 0;
+}
